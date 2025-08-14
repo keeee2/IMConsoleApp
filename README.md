@@ -1,6 +1,22 @@
-# IMConsoleApp
+## 1. .env 파일 구성
+```js
+TENCENT_IM_DOMAIN=https://adminapisgp.im.qcloud.com
+TENCENT_IM_SDK_APP_ID=00000000
+TENCENT_IM_APP_KEY=00000000....0000
+TENCENT_IM_ADMIN_IDENTIFIER=administrator
+TENCENT_IM_DEFAULT_GROUP_TYPE=ChatRoom
+TENCENT_IM_USERSIG_EXPIRE=15552000
+HTTP_TIMEOUT_SEC=15
+REQUEST_DELAY_ENABLED=true
+REQUEST_DELAY_MIN_MS=100
+REQUEST_DELAY_MAX_MS=500
+```
 
-# 실행 방법
+자세한 건 직접 문의
+
+---
+
+## 2. 실행 방법
 
 ```bash
 # 빌드
