@@ -10,25 +10,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: '1.20'
 
-      - name: Build app (app/main.go)
-        run: |
-          mkdir -p dist
-          go build -v -o dist/app ./app
-
-      - name: Test (all packages)
+      - name: Test (Linux host)
         run: go test -v ./...
 
-      - name: Upload build artifact
+      - name: Build Windows .exe (cross-compile)
+        run: |
+          mkdir -p dist
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -v -o dist/app.exe ./app
+
+      - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-linux-amd64
-          path: dist/app
+          name: app-windows-amd64.exe
+          path: dist/app.exe
