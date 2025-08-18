@@ -32,3 +32,22 @@ func (c *Client) QueryOnlineStatus(ctx context.Context, ids []string, detail, in
 	}
 	return c.postJSON(ctx, QueryOnlineStatusAPIPath, req)
 }
+
+func (c *Client) MultiAccountImport(ctx context.Context, accounts []AccountImportReq) ([]byte, int, error) {
+	return c.postJSON(ctx, MultiAccountImportAPIPath, MultiAccountImportReq{Accounts: accounts})
+}
+
+func (c *Client) AccountDelete(ctx context.Context, ids ...string) ([]byte, int, error) {
+	items := make([]struct {
+		UserID string `json:"UserID"`
+	}, 0, len(ids))
+	for _, id := range ids {
+		if id == "" {
+			continue
+		}
+		items = append(items, struct {
+			UserID string `json:"UserID"`
+		}{UserID: id})
+	}
+	return c.postJSON(ctx, AccountDeleteAPIPath, AccountDeleteReq{DeleteItem: items})
+}

@@ -36,6 +36,10 @@ func mainMenu() {
 	fmt.Println("  1) 그룹 관리")
 	fmt.Println("  2) 메시지 관리")
 	fmt.Println("  3) 계정 관리")
+	fmt.Println("  4) 프로필 관리")
+	fmt.Println("  5) 전역 음소거(Global Mute)")
+	fmt.Println("  6) 운영/진단(Ops)")
+	fmt.Println("  r) Raw API 호출(모든 엔드포인트)")
 	fmt.Println("  q) 종료")
 }
 
@@ -58,14 +62,16 @@ func groupMenu() {
 // 메시지 전송 하위 메뉴
 func messageMenu() {
 	fmt.Println("------------------------------")
-	fmt.Println("[메시지 전송]")
-	fmt.Println("  1) 시스템 메시지 전송")
-	fmt.Println("  2) 그룹 일반 텍스트 전송")
-	fmt.Println("  3) 1:1(C2C) 텍스트 전송")
+	fmt.Println("[메시지 관리]")
+	fmt.Println("  1) 그룹 메시지 전송")
+	fmt.Println("  2) 1:1 메시지 전송")
+	fmt.Println("  3) 그룹 시스템 알림")
 	fmt.Println("  4) 그룹 히스토리 조회")
 	fmt.Println("  5) 그룹 메시지 회수")
-	fmt.Println("  b) 뒤로가기")
-	fmt.Println("  q) 종료")
+	fmt.Println("  6) 1:1(C2C) 텍스트(여러 명)")
+	fmt.Println("  7) 1:1 읽음 처리(AdminSetMsgRead)")
+	fmt.Println("  8) 1:1 메시지 회수(AdminMsgWithdraw)")
+	fmt.Println("  9) 1:1 미읽음 개수 조회")
 }
 
 // 계정 관리 하위 메뉴
@@ -76,6 +82,8 @@ func accountMenu() {
 	fmt.Println("  2) 계정 체크(AccountCheck)")
 	fmt.Println("  3) 강제 로그아웃(Kick)")
 	fmt.Println("  4) 온라인 상태 조회(QueryOnlineStatus)")
+	fmt.Println("  5) 계정 다중 등록(MultiAccountImport)")
+	fmt.Println("  6) 계정 삭제(AccountDelete)")
 	fmt.Println("  b) 뒤로가기")
 	fmt.Println("  q) 종료")
 }
@@ -165,6 +173,14 @@ func runMessageMenu(ctx context.Context, c *im.Client, r *bufio.Reader) {
 			handleGroupHistory(ctx, c, r)
 		case "5":
 			handleGroupRecall(ctx, c, r)
+		case "6":
+			handleBatchC2CText(ctx, c, r)
+		case "7":
+			handleAdminSetMsgRead(ctx, c, r)
+		case "8":
+			handleAdminWithdrawC2C(ctx, c, r)
+		case "9":
+			handleGetC2CUnread(ctx, c, r)
 		case "b":
 			return
 		case "q", "quit", "exit":
@@ -190,6 +206,7 @@ func runAccountMenu(ctx context.Context, c *im.Client, r *bufio.Reader) {
 			handleKick(ctx, c, r)
 		case "4":
 			handleQueryOnlineStatus(ctx, c, r)
+
 		case "b":
 			return
 		case "q", "quit", "exit":
@@ -228,6 +245,77 @@ func StartConsole(client *im.Client, cfg im.Config) {
 			runMessageMenu(ctx, client, r)
 		case "3":
 			runAccountMenu(ctx, client, r)
+		case "4":
+			// 프로필 관리
+			for {
+				fmt.Println("------------------------------")
+				fmt.Println("[프로필 관리]")
+				fmt.Println("  1) 프로필 설정(PortraitSet)")
+				fmt.Println("  2) 프로필 조회(PortraitGet)")
+				fmt.Println("  b) 뒤로가기")
+				csel := prompt(r, "\n번호를 입력하세요", "1 ~ 2")
+				fmt.Println()
+				csel = strings.ToLower(csel)
+				if csel == "b" {
+					break
+				}
+				switch csel {
+				case "1":
+					handlePortraitSet(ctx, client, r)
+				case "2":
+					handlePortraitGet(ctx, client, r)
+				default:
+					fmt.Println("알 수 없는 선택입니다.")
+				}
+			}
+		case "5":
+			// 전역 음소거
+			for {
+				fmt.Println("------------------------------")
+				fmt.Println("[전역 음소거]")
+				fmt.Println("  1) 설정(SetNoSpeaking)")
+				fmt.Println("  2) 조회(GetNoSpeaking)")
+				fmt.Println("  b) 뒤로가기")
+				gsel := prompt(r, "\n번호를 입력하세요", "1 ~ 2")
+				fmt.Println()
+				gsel = strings.ToLower(gsel)
+				if gsel == "b" {
+					break
+				}
+				switch gsel {
+				case "1":
+					handleSetNoSpeaking(ctx, client, r)
+				case "2":
+					handleGetNoSpeaking(ctx, client, r)
+				default:
+					fmt.Println("알 수 없는 선택입니다.")
+				}
+			}
+		case "6":
+			// 운영/진단
+			for {
+				fmt.Println("------------------------------")
+				fmt.Println("[운영/진단]")
+				fmt.Println("  1) 운영 데이터 조회(GetAppInfo)")
+				fmt.Println("  2) 서버 IP 조회(GetIPList)")
+				fmt.Println("  b) 뒤로가기")
+				osel := prompt(r, "\n번호를 입력하세요", "1 ~ 2")
+				fmt.Println()
+				osel = strings.ToLower(osel)
+				if osel == "b" {
+					break
+				}
+				switch osel {
+				case "1":
+					handleGetAppInfo(ctx, client, r)
+				case "2":
+					handleGetIPList(ctx, client, r)
+				default:
+					fmt.Println("알 수 없는 선택입니다.")
+				}
+			}
+		case "r":
+			handleRawAPICall(ctx, client, r)
 		case "q", "quit", "exit":
 			fmt.Println("\n종료합니다... 👋")
 			return

@@ -125,3 +125,30 @@ func (c *Client) postJSON(ctx context.Context, apiPath string, body any) ([]byte
 
 	return b, resp.StatusCode, nil
 }
+
+func (c *Client) postRaw(ctx context.Context, apiPath string, raw []byte) ([]byte, int, error) {
+	urlStr, err := c.buildURL(apiPath)
+	if err != nil {
+		return nil, 0, err
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, urlStr, bytes.NewReader(raw))
+	if err != nil {
+		return nil, 0, fmt.Errorf("요청 생성 실패: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	c.delayBeforeRequest()
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, resp.StatusCode, err
+	}
+	return b, resp.StatusCode, nil
+}
+
+func (c *Client) CallRaw(ctx context.Context, apiPath string, raw []byte) ([]byte, int, error) {
+	return c.postRaw(ctx, apiPath, raw)
+}

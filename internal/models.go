@@ -46,6 +46,7 @@ type SendGroupMsgReq struct {
 	SendMsgControl          []string  `json:"SendMsgControl,omitempty"`
 	SupportMessageExtension int       `json:"SupportMessageExtension,omitempty"`
 }
+
 type SendGroupMsgResp struct {
 	ActionStatus string `json:"ActionStatus"`
 	ErrorCode    int    `json:"ErrorCode"`
@@ -63,6 +64,7 @@ type SendC2CMsgReq struct {
 	MsgRandom        uint32    `json:"MsgRandom"`
 	MsgBody          []MsgElem `json:"MsgBody"`
 }
+
 type SendC2CMsgResp struct {
 	ActionStatus string `json:"ActionStatus"`
 	ErrorCode    int    `json:"ErrorCode"`
@@ -77,6 +79,7 @@ type GroupMsgGetSimpleReq struct {
 	ReqMsgSeq       uint64 `json:"ReqMsgSeq,omitempty"`
 	WithRecalledMsg int    `json:"WithRecalledMsg,omitempty"`
 }
+
 type GroupMsgRecallReq struct {
 	GroupId    string `json:"GroupId"`
 	MsgSeqList []struct {
@@ -92,6 +95,7 @@ type GetGroupInfoReq struct {
 		MemberInfoFilter    []string `json:"MemberInfoFilter,omitempty"`
 	} `json:"ResponseFilter,omitempty"`
 }
+
 type GetGroupMemberInfoReq struct {
 	GroupId          string   `json:"GroupId"`
 	Limit            int      `json:"Limit,omitempty"`
@@ -102,17 +106,20 @@ type GetGroupMemberInfoReq struct {
 type addMember struct {
 	Member_Account string `json:"Member_Account"`
 }
+
 type AddGroupMemberReq struct {
 	GroupId    string      `json:"GroupId"`
 	Silence    int         `json:"Silence,omitempty"`
 	MemberList []addMember `json:"MemberList"`
 }
+
 type DeleteGroupMemberReq struct {
 	GroupId             string   `json:"GroupId"`
 	Silence             int      `json:"Silence,omitempty"`
 	Reason              string   `json:"Reason,omitempty"`
 	MemberToDel_Account []string `json:"MemberToDel_Account"`
 }
+
 type ForbidSendMsgReq struct {
 	GroupId         string   `json:"GroupId"`
 	Members_Account []string `json:"Members_Account"`
@@ -124,11 +131,13 @@ type AccountImportReq struct {
 	Nick    string `json:"Nick,omitempty"`
 	FaceUrl string `json:"FaceUrl,omitempty"`
 }
+
 type AccountCheckReq struct {
 	CheckItem []struct {
 		UserID string `json:"UserID"`
 	} `json:"CheckItem"`
 }
+
 type KickReq struct {
 	UserID string `json:"UserID"`
 }
@@ -138,3 +147,74 @@ type QueryOnlineStatusReq struct {
 	IsReturnInstid       int      `json:"IsReturnInstid,omitempty"`
 	IsReturnCustomStatus int      `json:"IsReturnCustomStatus,omitempty"`
 }
+
+// ========== Accounts ==========
+type MultiAccountImportReq struct {
+	Accounts []AccountImportReq `json:"Accounts"`
+}
+
+type AccountDeleteReq struct {
+	DeleteItem []struct {
+		UserID string `json:"UserID"`
+	} `json:"DeleteItem"`
+}
+
+// ========== C2C ==========
+type BatchSendC2CMsgReq struct {
+	SyncOtherMachine int       `json:"SyncOtherMachine,omitempty"`
+	FromAccount      string    `json:"From_Account,omitempty"`
+	ToAccount        []string  `json:"To_Account"`
+	MsgRandom        uint32    `json:"MsgRandom"`
+	MsgBody          []MsgElem `json:"MsgBody"`
+}
+
+type AdminSetMsgReadReq struct {
+	ReportAccount string `json:"Report_Account"`
+	PeerAccount   string `json:"Peer_Account"`
+	MsgReadTime   uint64 `json:"MsgReadTime,omitempty"`
+}
+
+type AdminMsgWithdrawReq struct {
+	FromAccount string `json:"From_Account"`
+	ToAccount   string `json:"To_Account"`
+	MsgKey      string `json:"MsgKey"`
+}
+
+type GetC2CUnreadMsgNumReq struct {
+	ToAccount   string   `json:"To_Account"`
+	PeerAccount []string `json:"Peer_Account,omitempty"`
+}
+
+// ========== Profile ==========
+type PortraitSetReq struct {
+	FromAccount string `json:"From_Account"`
+	ProfileItem []struct {
+		Tag   string      `json:"Tag"`
+		Value interface{} `json:"Value"`
+	} `json:"ProfileItem"`
+}
+
+type PortraitGetReq struct {
+	ToAccount            []string `json:"To_Account"`
+	TagList              []string `json:"TagList,omitempty"`
+	LastStandardSequence int      `json:"LastStandardSequence,omitempty"`
+	LastCustomSequence   int      `json:"LastCustomSequence,omitempty"`
+}
+
+// ========== Global NoSpeaking ==========
+type SetNoSpeakingReq struct {
+	Set_Account            string `json:"Set_Account"`
+	C2CmsgNospeakingTime   uint32 `json:"C2CmsgNospeakingTime,omitempty"`
+	GroupmsgNospeakingTime uint32 `json:"GroupmsgNospeakingTime,omitempty"`
+}
+
+type GetNoSpeakingReq struct {
+	Get_Account string `json:"Get_Account"`
+}
+
+// ========== Ops ==========
+type GetAppInfoReq struct {
+	RequestField []string `json:"RequestField,omitempty"`
+}
+
+type GetIPListReq struct{}
